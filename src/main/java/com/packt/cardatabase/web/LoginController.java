@@ -27,7 +27,6 @@ public class LoginController {
         UsernamePasswordAuthenticationToken creds = new UsernamePasswordAuthenticationToken(
                 credentials.username(), credentials.password()
         );
-        System.out.println("el valor del username es " + credentials.username());
         Authentication auth = authenticationManager.authenticate(creds);
 
         // genera el token

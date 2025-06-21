@@ -13,6 +13,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
 @Configuration
@@ -20,9 +21,11 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;
+    private final AuthenticationFilter authenticationFilter;
 
-    public SecurityConfig(UserDetailsServiceImpl userDetailsService){
+    public SecurityConfig(UserDetailsServiceImpl userDetailsService, AuthenticationFilter authenticationFilter){
         this.userDetailsService = userDetailsService;
+        this.authenticationFilter = authenticationFilter;
     }
 
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception{
@@ -48,7 +51,9 @@ public class SecurityConfig {
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests( (authorizeHttpRequests) ->
                         authorizeHttpRequests.requestMatchers(HttpMethod.POST,"/login").permitAll()
-                                .anyRequest().authenticated());
+                                .anyRequest().authenticated())
+                .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
